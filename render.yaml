@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: privaty-car-demo
+    runtime: python
+    buildCommand: python bootstrap.py && pip install -r appsrc/requirements.txt
+    startCommand: gunicorn wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: SITE_URL
+        value: https://privaty-car-demo-obed236.onrender.com
