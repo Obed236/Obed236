@@ -23,8 +23,10 @@ Le projet est stocké sous forme de payload compressé afin de conserver l'ensem
 
 ```bash
 python bootstrap.py
-pip install -r appsrc/requirements.txt
+pip install -r Privaty_Car_V1/requirements.txt
 gunicorn wsgi:app
 ```
 
-`bootstrap.py` reconstruit automatiquement le projet dans `appsrc/` à partir des fichiers `privaty_payload_0.b64` à `privaty_payload_8.b64`.
+`bootstrap.py` reconstruit automatiquement le projet dans `Privaty_Car_V1/` à partir des fichiers `privaty_payload_0.b64` à `privaty_payload_2.b64`.
+
+La charge utile est une archive TAR.XZ encodée en base64, en trois parties, compatible avec la commande de construction Render existante. La charte du 12 septembre inclut les polices locales et les photos fournies.
