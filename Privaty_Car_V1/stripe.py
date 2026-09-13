@@ -19,7 +19,7 @@ if _patch_file.exists():
         if hasattr(_patch, "_apply"):
             _patch._apply()
 
-# Apply the small live theme override after the archived brand bundle.
+# Apply the main live theme/iconography override after the archived brand bundle.
 _theme_file = _here / "theme_override.py"
 if _theme_file.exists():
     _theme_spec = importlib.util.spec_from_file_location("_privaty_theme_override", _theme_file)
@@ -28,6 +28,16 @@ if _theme_file.exists():
         _theme_spec.loader.exec_module(_theme)
         if hasattr(_theme, "apply"):
             _theme.apply()
+
+# Complete iconography on the remaining public pages.
+_complete_file = _here / "iconography_complete.py"
+if _complete_file.exists():
+    _complete_spec = importlib.util.spec_from_file_location("_privaty_iconography_complete", _complete_file)
+    if _complete_spec and _complete_spec.loader:
+        _complete = importlib.util.module_from_spec(_complete_spec)
+        _complete_spec.loader.exec_module(_complete)
+        if hasattr(_complete, "apply"):
+            _complete.apply()
 
 # Delegate to the installed third-party Stripe package instead of shadowing it.
 _search = []
