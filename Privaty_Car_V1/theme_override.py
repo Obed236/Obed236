@@ -1,54 +1,53 @@
 from pathlib import Path
+import re
 
-MARKER = "/* === Privaty Car light header 2026-09-13 === */"
+MARKER = "/* === Privaty Car hero logo transparent 2026-09-13 === */"
 CSS = r"""
-/* === Privaty Car light header 2026-09-13 === */
-.site-header{
-  background:#F7F4EE !important;
-  color:#111111 !important;
-  border-bottom:1px solid rgba(209,174,114,.72) !important;
-  backdrop-filter:blur(14px) !important;
-}
-.site-header .brand,
-.site-header .main-nav,
-.site-header .main-nav > a:not(.btn){
-  color:#111111 !important;
-}
-.site-header .main-nav > a:not(.btn):hover{color:#765822 !important;}
-.site-header .menu-btn{
-  color:#111111 !important;
-  border-color:#BCA77F !important;
+/* === Privaty Car hero logo transparent 2026-09-13 === */
+.hero-signature{
   background:transparent !important;
+  border:0 !important;
+  padding:0 !important;
+  box-shadow:none !important;
+  width:min(76%,380px) !important;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.55)) !important;
 }
-.site-header .btn{color:#111111 !important;}
-.site-header .brand-logo{
-  filter:grayscale(1) invert(1) !important;
-}
-@media (max-width:980px){
-  .site-header .main-nav{
-    background:#F7F4EE !important;
-    color:#111111 !important;
-    border-top:1px solid rgba(209,174,114,.55) !important;
-    box-shadow:0 16px 28px rgba(0,0,0,.08);
-  }
+@media(max-width:680px){
+  .hero-signature{width:74% !important;}
 }
 """
 
 
 def apply():
     root = Path(__file__).resolve().parent
+
     css_path = root / "static" / "css" / "style.css"
     if css_path.exists():
         css = css_path.read_text(encoding="utf-8")
+        # A fresh Render build starts from the archived stylesheet. Keep this idempotent
+        # in case the hook runs more than once in the same process.
         if MARKER in css:
             css = css.split(MARKER)[0].rstrip() + "\n"
         css_path.write_text(css + "\n" + CSS.strip() + "\n", encoding="utf-8")
 
+    home = root / "templates" / "home.html"
+    if home.exists():
+        html = home.read_text(encoding="utf-8")
+        html = html.replace(
+            "img/privaty-logo-dark.png",
+            "img/privaty-logo-transparent.png"
+        )
+        home.write_text(html, encoding="utf-8")
+
+    # Force browsers to fetch the corrected CSS. The header itself is intentionally
+    # left exactly as defined by the original Privaty Car theme.
     base = root / "templates" / "base.html"
     if base.exists():
         html = base.read_text(encoding="utf-8")
-        old = "{{ url_for('static', filename='css/style.css') }}"
-        new = "{{ url_for('static', filename='css/style.css') }}?v=20260913-lightheader"
-        if new not in html:
-            html = html.replace(old, new)
+        token = "{{ url_for('static', filename='css/style.css') }}"
+        html = re.sub(
+            re.escape(token) + r"(?:\?v=[^\"']+)?",
+            token + "?v=20260913-herologo",
+            html,
+        )
         base.write_text(html, encoding="utf-8")
