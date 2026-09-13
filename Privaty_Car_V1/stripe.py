@@ -19,6 +19,16 @@ if _patch_file.exists():
         if hasattr(_patch, "_apply"):
             _patch._apply()
 
+# Apply the small live theme override after the archived brand bundle.
+_theme_file = _here / "theme_override.py"
+if _theme_file.exists():
+    _theme_spec = importlib.util.spec_from_file_location("_privaty_theme_override", _theme_file)
+    if _theme_spec and _theme_spec.loader:
+        _theme = importlib.util.module_from_spec(_theme_spec)
+        _theme_spec.loader.exec_module(_theme)
+        if hasattr(_theme, "apply"):
+            _theme.apply()
+
 # Delegate to the installed third-party Stripe package instead of shadowing it.
 _search = []
 for _entry in sys.path:
